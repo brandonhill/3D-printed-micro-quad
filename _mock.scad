@@ -17,7 +17,7 @@ echo(str(
 *
 cg();
 
-*
+//*
 translate([0, 0, 0.1])
 mock_battery();
 
@@ -35,10 +35,10 @@ mock_fc();
 
 //*
 // color("white")
-show_half()
+//show_half()
 // show_half(r = [0, 0, 90]) // centre (esc/fc clearance) inspection
 // show_half(r = [0, 0, 90], t = [46.5, 0]) // cam mount inspection
-// %
+//%
 union() {
 // 	*
 	frame_bottom();
@@ -53,7 +53,7 @@ union() {
 	post(FRAME_HEIGHT - FRAME_THICKNESS * 2);
 }
 
-*
+//*
 pos_motors() {
 	translate([0, 0, MOTOR_POS[2]])
 	rotate([0, 0, -MOTOR_ANGLE])
