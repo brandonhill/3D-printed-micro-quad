@@ -10,12 +10,12 @@ Requires [BH Lib](https://github.com/brandonhill/BH-Lib). Checkout to adjacent d
 
 ## Components
 
-* 18650 3100mAh LiIon battery
-* 60mm press-on props
+* 18650 3100mAh 13C LiIon battery
+* 56mm press-on props
 * Eachine VTX03 72ch 0/25/50/200mW video transmitter
 * FrSky micro receiver
 * Piezo buzzer
 * RunCam Swift Micro 1/3" CCD camera
-* Sunny Sky 0705 1500KV motors
-* Teensy 1S flight controller
-* Teensy 1S 6A 4 in 1 ESC
+* Sunny Sky 0705 15000KV motors
+* Teeny 1S F4 flight controller
+* Teeny 1S 6A 4 in 1 BLHeli_S ESC
