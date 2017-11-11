@@ -1,18 +1,14 @@
 
 include <_setup.scad>;
-use <frame.scad>;
-use <post.scad>;
+include <frame.scad>;
+use <standoff.scad>;
 
-if (MOTOR_MOUNT_THICKNESS > FRAME_THICKNESS)
-warn("Motor mount thickness exceeds frame thickness.");
+PRINT_COL = "white";
+PRINT_ALPHA = 1;
 
-echo(str(
-	"Size = ", SIZE_DIA, " (", SIZE, ")"
-	,", Props = ", PROP_RAD
-	,", CG = ", CG
-	,", Battery offset = ", BATT_POS[0]
-	,", Weight (components) ≈ ", WEIGHT
-));
+print(["CG = ", CG, ", Weight (components) ≈ ", WEIGHT]);
+
+//$fs = 4;
 
 *
 cg();
@@ -33,35 +29,52 @@ mock_esc();
 //*
 mock_fc();
 
+// experimenting
+*translate([-38, 0, 15])
+rotate([0, -90])
+5g_cp_antenna(5);
+
+// inspections
+//show_half() // internals
+// show_half(r = [0, 0, 90]) // ESC/FC clearance
+// show_half(r = [0, 0, 90], t = [46.5, 0]) // cam mount
+//show_half(r = [90, 0], t = [0, 0, 12.5]) // canopy screw surrounds
+
+{
+
 //*
-// color("white")
-//show_half()
-// show_half(r = [0, 0, 90]) // centre (esc/fc clearance) inspection
-// show_half(r = [0, 0, 90], t = [46.5, 0]) // cam mount inspection
-//%
-union() {
-// 	*
+	color(PRINT_COL, PRINT_ALPHA)
 	frame_bottom();
 
-// 	*
+//*
+	color(PRINT_COL, PRINT_ALPHA)
+	translate([0, 0, TOLERANCE_CLOSE])
+	pos_fc_screws()
+	esc_standoff();
+
+//*
+	color(PRINT_COL, PRINT_ALPHA)
 	translate([0, 0, TOLERANCE_CLOSE])
 	frame_top();
 
-// 	*
-	translate([0, 0, FRAME_HEIGHT / 2])
+//*
+	color(PRINT_COL, PRINT_ALPHA)
+	translate([0, 0, FRAME_THICKNESS])
 	pos_frame_screws(posts = true)
-	post(FRAME_HEIGHT - FRAME_THICKNESS * 2);
-}
+	frame_standoff();
 
 //*
-pos_motors() {
-	translate([0, 0, MOTOR_POS[2]])
-	rotate([0, 0, -MOTOR_ANGLE])
+	color(PRINT_COL, PRINT_ALPHA)
+	usb_plug_hole_cover();
+
+//*
+	pos_motors()
+	translate([0, 0, -TOLERANCE_CLOSE])
+	rotate([0, 0, -BOOM_ANGLE])
 	mock_motor();
 
-// 	%color(alpha(COLOUR_BLACK, 0.15))
-	translate([0, 0, MOTOR_POS[2] - 11.75])
-	mock_prop([0, 0, 0]);
+	pos_props()
+	mock_prop();
 }
 
 //*
@@ -83,7 +96,7 @@ module cg() {
 		rotate([0, 90])
 		cylinder(h = SIZE_DIA * 2, r = 0.25, center = true);
 
-		color("green")
+		color("lime")
 		rotate([90, 0])
 		cylinder(h = SIZE_DIA * 2, r = 0.25, center = true);
 
@@ -128,15 +141,12 @@ module mock_camera() {
 module mock_esc(pos = ESC_POS, rot = ESC_ROT) {
 	translate(pos)
 	rotate(rot)
-	color(COLOUR_GREY_DARK)
-	cube(ESC_DIM, true);
+	esc_teeny_6a_4in1();
 }
 
-module mock_fc(pos = FC_POS, rot = FC_ROT) {
-	translate(pos)
-	rotate(rot)
-	color(COLOUR_GREY_DARK)
-	cube(FC_DIM, true);
+module mock_fc() {
+	pos_fc()
+	fc_teeny_f4();
 }
 
 module mock_motor(pos = [], rot = MOTOR_ROT) {
