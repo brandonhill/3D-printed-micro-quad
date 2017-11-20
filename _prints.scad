@@ -1,34 +1,29 @@
 
 include <_setup.scad>;
+include <camera mount.scad>;
+include <canopy.scad>;
 include <frame.scad>;
-use <standoff.scad>;
 
-SIDE_ANGLE = atan(
-	(ESC_DIM[1] - FC_DIM[1]) / 2
-	/
-	((ESC_POS[2] + ESC_DIM[2] / 2 - CANOPY_ROUNDING / 2) - CANOPY_ROUNDING));
+MOTOR_SHAFT_HEIGHT = MOTOR_SUNNYSKY_0705_SHAFT_HEIGHT;
+MOTOR_SHAFT_RAD = MOTOR_SUNNYSKY_0705_SHAFT_RAD;
 
 $fs = 0.5;
 
-// print two
 *
-rotate([0, 90])
-esc_standoff();
+camera_mount();
 
 *
-frame_bottom();
+rotate([180, 0, 0])
+canopy();
 
-*
-frame_top();
-
-// print four
-*
-rotate([0, 90])
-frame_standoff();
+//*
+frame();
 
 // print two
 *
 //scale([-1, 1]) // ... and two of these
+
+*
 propeller(
 	blade_dim = [12, 0.8],
 	n = 5,
@@ -39,7 +34,3 @@ propeller(
 	shaft_rad = MOTOR_SHAFT_RAD + TOLERANCE_FIT,
 	shaft_surround = 1.5,
 	support = PRINT_NOZZLE);
-
-*
-rotate([-(90 - SIDE_ANGLE), 0])
-usb_plug_hole_cover();

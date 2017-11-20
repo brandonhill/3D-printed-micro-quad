@@ -1,7 +1,8 @@
 
 include <_setup.scad>;
 include <frame.scad>;
-use <standoff.scad>;
+use <camera mount.scad>;
+use <canopy.scad>;
 
 PRINT_COL = "white";
 PRINT_ALPHA = 1;
@@ -13,14 +14,15 @@ print(["CG = ", CG, ", Weight (components) ≈ ", WEIGHT]);
 *
 cg();
 
-//*
+*
 translate([0, 0, 0.1])
 mock_battery();
 
-//*
+*
 mock_buzzer();
 
 //*
+camera_mount()
 mock_camera();
 
 //*
@@ -36,40 +38,21 @@ rotate([0, -90])
 
 // inspections
 //show_half() // internals
-// show_half(r = [0, 0, 90]) // ESC/FC clearance
-// show_half(r = [0, 0, 90], t = [46.5, 0]) // cam mount
-//show_half(r = [90, 0], t = [0, 0, 12.5]) // canopy screw surrounds
-
 {
 
 //*
-	color(PRINT_COL, PRINT_ALPHA)
-	frame_bottom();
+color(PRINT_COL, PRINT_ALPHA)
+//%
+	translate([0, 0, FRAME_BASE_THICKNESS + TOLERANCE_FIT])
+	canopy();
 
 //*
-	color(PRINT_COL, PRINT_ALPHA)
-	translate([0, 0, TOLERANCE_CLOSE])
-	pos_fc_screws()
-	esc_standoff();
-
-//*
-	color(PRINT_COL, PRINT_ALPHA)
-	translate([0, 0, TOLERANCE_CLOSE])
-	frame_top();
-
-//*
-	color(PRINT_COL, PRINT_ALPHA)
-	translate([0, 0, FRAME_THICKNESS])
-	pos_frame_screws(posts = true)
-	frame_standoff();
-
-//*
-	color(PRINT_COL, PRINT_ALPHA)
-	usb_plug_hole_cover();
+color(PRINT_COL, PRINT_ALPHA)
+//%
+	frame();
 
 //*
 	pos_motors()
-	translate([0, 0, -TOLERANCE_CLOSE])
 	rotate([0, 0, -BOOM_ANGLE])
 	mock_motor();
 
@@ -124,11 +107,11 @@ module mock_camera() {
 	fov_inset = 4; // back it into the lens
 	fov_cone_height = SIZE[0] * 0.2;
 
-	translate(CAM_POS)
-	rotate(CAM_ROT) {
+//	translate(CAM_MOUNT_POS)
+//	rotate(CAM_ROT)
+	{
 
-		translate([CAM_PIVOT_OFFSET, 0])
-		cam_runcam_swift_micro();
+		cam_cmos_micro();
 
 		// FOV
 		*
@@ -162,7 +145,7 @@ module mock_prop(pos = [], rot = []) {
 	color(COLOUR_BLACK)
 	rotate_extrude()
 	translate([PROP_RAD, 0])
-	circle(0.25);
+	circle(0.1);
 }
 
 module mock_rx(pos = RX_POS, rot = RX_ROT) {
