@@ -16,21 +16,19 @@ camera_mount();
 rotate([180, 0, 0])
 canopy();
 
-//*
+*
 frame();
 
 // print two
-*
+//*
 //scale([-1, 1]) // ... and two of these
-
-*
 propeller(
 	blade_dim = [12, 0.8],
-	n = 5,
+	n = 3,
 	pitch = 30,
 	r = PROP_RAD - TOLERANCE_CLEAR,
 	hub_height = MOTOR_SHAFT_HEIGHT,
 //	reverse = true,
 	shaft_rad = MOTOR_SHAFT_RAD + TOLERANCE_FIT,
 	shaft_surround = 1.5,
-	support = PRINT_NOZZLE);
+	support = PRINT_NOZZLE_DIA);

@@ -89,12 +89,13 @@ module shape_frame_inner(
 module shape_frame_motor_mounts(
 		hull = true,
 		motor_mount_arm_width = MOTOR_MOUNT_ARM_WIDTH,
+		motor_screw_dim = MOTOR_SCREW_DIM,
 		mount_rad = MOTOR_MOUNT_RAD,
 		walls = FRAME_WALLS,
 		wire_clearance = true,
 	) {
 
-	r = motor_mount_arm_width / 2 + TOLERANCE_CLEAR + walls;
+	r = motor_screw_dim[0] / 2 + TOLERANCE_CLEAR + walls;
 
 	pos_motors(z = false) {
 		if (hull)
@@ -142,6 +143,7 @@ module shape_frame_outer(
 module frame(
 		base_thickness = FRAME_BASE_THICKNESS,
 		cam_dim = CAM_DIM,
+		cam_mount_thickness = FRAME_CAM_MOUNT_THICKNESS,
 		cam_pos = CAM_MOUNT_POS,
 		cam_screw_dim = CAM_MOUNT_SCREW_DIM,
 		flange_thickness = FRAME_FLANGE_THICKNESS,
@@ -162,41 +164,81 @@ module frame(
 
 	difference() {
 		union() {
-
-			// base
-			linear_extrude(base_thickness)
-			shape_frame_inner();
-
-			// cam mount reinforcement
-			pos_cam_mount(z = 0)
-			cylinder(h = flange_thickness, r = cam_screw_dim[0] / 2 + TOLERANCE_CLEAR + flange_width + walls);
-
-			// flange
-			linear_extrude(flange_thickness)
 			difference() {
-				if (prop_guards)
-				shape_frame_outer();
+				union() {
 
-				smooth(smoothing)
-				difference() {
-					if (prop_guards)
-					offset(r = -(walls + flange_width))
-					shape_frame_outer();
+					// base
+					linear_extrude(base_thickness)
+					shape_frame_inner();
 
-					union() {
-						shape_frame_booms();
-						shape_frame_inner();
+					// flange
+					linear_extrude(flange_thickness, convexity = 2)
+					difference() {
+						if (prop_guards)
+						shape_frame_outer();
+
+						smooth(smoothing)
+						difference() {
+							if (prop_guards)
+							offset(r = -(walls + flange_width))
+							shape_frame_outer();
+
+							union() {
+								shape_frame_booms();
+								shape_frame_inner();
+							}
+						}
+
+						offset(r = -walls)
+						shape_frame_center();
+					}
+
+					// ridges
+					if (flange_thickness < height)
+					linear_extrude(height, convexity = 2)
+					intersection() {
+						hull()
+						shape_frame_outer();
+
+						union() {
+
+							// booms - outer
+							difference() {
+								shape_frame_booms(flange_width = 0);
+								hull()
+								shape_frame_motor_mounts();
+							}
+
+							// interior
+							difference() {
+								shape_frame_inner();
+								offset(r = -walls)
+								shape_frame_inner();
+							}
+
+							// perimeter
+							if (prop_guards)
+							difference() {
+								shape_frame_outer();
+								offset(r = -walls)
+								shape_frame_outer();
+							}
+						}
 					}
 				}
 
+				// interior
+				translate([0, 0, base_thickness])
+				linear_extrude(height)
 				offset(r = -walls)
-				shape_frame_center();
+				shape_frame_inner();
 			}
 
-			// motor mounts
-			linear_extrude(motor_mount_thickness)
-			shape_frame_motor_mounts(hull = false, walls = 0, wire_clearance = false);
+			// cam mount reinforcement
+			pos_cam_mount(z = 0)
+			cylinder(h = cam_mount_thickness, r = cam_screw_dim[1]);
 
+			// stack mounts
 			pos_stack_mount_screws()
 			screw_surround(
 				dim = stack_screw_dim,
@@ -205,36 +247,11 @@ module frame(
 				tolerance = TOLERANCE_FIT,
 				walls = stack_screw_surround);
 
-			// ridges
-			linear_extrude(height, convexity = 2)
+			// motor mounts
+			linear_extrude(motor_mount_thickness)
 			intersection() {
-				hull()
-				shape_frame_outer();
-
-				union() {
-
-					// booms - outer
-					difference() {
-						shape_frame_booms(flange_width = 0);
-						hull()
-						shape_frame_motor_mounts();
-					}
-
-					// interior
-					difference() {
-						shape_frame_inner();
-						offset(r = -walls)
-						shape_frame_inner();
-					}
-
-					// perimeter
-					if (prop_guards)
-					difference() {
-						shape_frame_outer();
-						offset(r = -walls)
-						shape_frame_outer();
-					}
-				}
+				shape_frame_inner();
+				shape_frame_motor_mounts(hull = false, xwalls = 0.5, wire_clearance = false);
 			}
 		}
 
@@ -245,7 +262,7 @@ module frame(
 		// motor axle/screw holes
 		pos_motors(z = -0.1) {
 			pos_motor_screws()
-			cylinder(h = height, r = motor_screw_dim[0] / 2 + TOLERANCE_CLEAR);
+			cylinder(h = height, r = motor_screw_dim[0] / 2 + TOLERANCE_FIT);
 			cylinder(h = height, r = motor_axle_rad + TOLERANCE_CLEAR);
 		}
 

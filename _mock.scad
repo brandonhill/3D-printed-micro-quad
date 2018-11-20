@@ -9,26 +9,19 @@ PRINT_ALPHA = 1;
 
 print(["CG = ", CG, ", Weight (components) ≈ ", WEIGHT]);
 
-//$fs = 4;
-
 *
 cg();
 
-*
 translate([0, 0, 0.1])
 mock_battery();
 
-*
-mock_buzzer();
+*mock_buzzer();
 
-//*
 camera_mount()
 mock_camera();
 
-//*
 mock_esc();
 
-//*
 mock_fc();
 
 // experimenting
@@ -40,18 +33,13 @@ rotate([0, -90])
 //show_half() // internals
 {
 
-//*
-color(PRINT_COL, PRINT_ALPHA)
-//%
+	color(PRINT_COL, PRINT_ALPHA)
 	translate([0, 0, FRAME_BASE_THICKNESS + TOLERANCE_FIT])
 	canopy();
 
-//*
-color(PRINT_COL, PRINT_ALPHA)
-//%
+	color(PRINT_COL, PRINT_ALPHA)
 	frame();
 
-//*
 	pos_motors()
 	rotate([0, 0, -BOOM_ANGLE])
 	mock_motor();
@@ -60,10 +48,8 @@ color(PRINT_COL, PRINT_ALPHA)
 	mock_prop();
 }
 
-//*
 mock_rx();
 
-//*
 mock_vtx();
 
 // size check
@@ -92,8 +78,7 @@ module mock_battery(pos = BATT_POS, rot = BATTERY_ROT) {
 	translate(pos)
 	rotate(rot)
 	color(COLOUR_GREY_DARK)
-	rotate([90, 0, 90])
-	cylinder(h = BATT_DIM[0], r = BATT_DIM[2] / 2, center = true);
+	cube(BATT_DIM, center = true);
 }
 
 module mock_buzzer(pos = BUZZER_POS, rot = BUZZER_ROT) {
